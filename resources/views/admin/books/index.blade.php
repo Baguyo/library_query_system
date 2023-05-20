@@ -18,25 +18,31 @@
             <!-- Nav tabs -->
             <ul class="nav nav-tabs" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active text-primary fs-5" id="home-tab" data-bs-toggle="tab"
+                    <button class="nav-link {{ ($status === "available") ? 'active' :'' }} text-primary fs-5" id="home-tab" data-bs-toggle="tab"
                         data-bs-target="#home" type="button" role="tab" aria-controls="home"
                         aria-selected="true">Available Books <span class="badge bg-primary"> {{ $books->count() }} </span>
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link text-warning fs-5" id="profile-tab" data-bs-toggle="tab"
+                    <button class="nav-link {{ ($status === "pickUp") ? 'active' :'' }} text-warning fs-5" id="profile-tab" data-bs-toggle="tab"
                         data-bs-target="#profile" type="button" role="tab" aria-controls="profile"
-                        aria-selected="false">Books to release <span class="badge bg-warning">
+                        aria-selected="false">
+                        @if ($isNewBooksToRelease)
+                            <sup>
+                                <span class="badge bg-dark text-warning">New!</span>
+                            </sup>
+                        @endif
+                        Books to release <span class="badge bg-warning">
                             {{ $booksToRelease->count() }} </span> </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link text-info fs-5" id="released-tab" data-bs-toggle="tab"
+                    <button class="nav-link {{ ($status === "released") ? 'active' :'' }} text-info fs-5" id="released-tab" data-bs-toggle="tab"
                         data-bs-target="#released" type="button" role="tab" aria-controls="released"
                         aria-selected="false">Books released <span class="badge bg-info"> {{ $booksReleased->count() }}
                         </span> </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link text-danger fs-5" id="messages-tab" data-bs-toggle="tab"
+                    <button class="nav-link {{ ($status === "toReturn") ? 'active' :'' }} text-danger fs-5" id="messages-tab" data-bs-toggle="tab"
                         data-bs-target="#messages" type="button" role="tab" aria-controls="messages"
                         aria-selected="false">Books to return <span class="badge bg-danger"> {{ $booksToReturn->count() }}
                         </span></button>
@@ -51,7 +57,7 @@
 
             <!-- Tab panes -->
             <div class="tab-content">
-                <div class="tab-pane active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                <div class="tab-pane {{ ($status === "available") ? 'active' :'' }}" id="home" role="tabpanel" aria-labelledby="home-tab">
 
                     {{-- <input type="text" list="cars" />
                     <datalist id="cars">
@@ -60,6 +66,7 @@
                         <option>Mercedes</option>
                         <option>Audi</option>
                     </datalist> --}}
+                    {{-- https://www.jsdelivr.com/package/npm/sweetalert2 --}}
 
                     <div class="table-responsive mt-3 bg-light shadow p-3">
                         <table class="table fs-5" id="dataTable">
@@ -92,12 +99,20 @@
                                                 view transaction
                                             </a> --}}
                                             <button type="button" bTitle="{{ $item->name }}" bId="{{ $item->id }}"
-                                                class="btn btn-warning btn-sm trans-show" data-bs-toggle="modal"
+                                                class="btn btn-warning btn-sm trans-show mb-2" data-bs-toggle="modal"
                                                 data-bs-target="#staticBackdrop">
                                                 view transaction
                                             </button>
-                                            <a href="{{ route('admin.books.edit', ['book' => $item->id]) }}"
-                                                class="btn btn-sm btn-primary ">Edit</a>
+                                            <div class="d-flex justify-content-between">
+                                                <a href="{{ route('admin.books.edit', ['book' => $item->id]) }}"
+                                                    class="btn btn-sm btn-primary">Edit</a>
+                                                <form method="post" class="delete" action="{{ route('admin.books.destroy', ['book'=>$item->id]) }}">
+                                                    @method('delete')
+                                                    @csrf
+                                                    {{-- <input type="number" name="bId" id="" value="{{$item->id}}" disabled hidden> --}}
+                                                    <input type="submit" value="Delete" class="btn btn-sm btn-danger">
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
                                 @empty
@@ -107,7 +122,7 @@
                     </div>
 
                 </div>
-                <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                <div class="tab-pane {{ ($status === "pickUp") ? 'active' :'' }}" id="profile" role="tabpanel" aria-labelledby="profile-tab">
                     <div class="table-responsive mt-3 bg-light shadow p-3">
                         <table class="table fs-5" id="dataTable2">
                             <thead>
@@ -133,7 +148,7 @@
                                         <td>{{ $item->reference }}</td>
                                         <td> <span class="badge bg-warning text-dark"> {{ $item->status }} </span> </td>
                                         <td>
-                                            <form action="{{ route('admin.books.release') }}" method="post">
+                                            <form action="{{ route('admin.books.release') }}" method="post" class="release">
                                                 @csrf
                                                 <input type="number" name="tIdR" class="hidden" readonly hidden
                                                     value="{{ $item->id }}">
@@ -147,7 +162,7 @@
                         </table>
                     </div>
                 </div>
-                <div class="tab-pane" id="released" role="tabpanel" aria-labelledby="released-tab">
+                <div class="tab-pane {{ ($status === "released") ? 'active' :'' }}" id="released" role="tabpanel" aria-labelledby="released-tab">
                     <div class="table-responsive mt-3 bg-light shadow p-3">
                         <table class="table fs-5" id="dataTable3">
                             <thead>
@@ -175,7 +190,7 @@
                                         <td>{{ $item->release_date }}</td>
                                         <td> <span class="badge bg-info text-dark"> {{ $item->status }} </span> </td>
                                         <td>
-                                            <form action="{{ route('admin.books.return') }}" method="post">
+                                            <form action="{{ route('admin.books.return') }}" method="post" class="return">
                                                 @csrf
                                                 <input type="number" name="tIdR" class="d-none" readonly hidden
                                                     value="{{ $item->id }}">
@@ -189,7 +204,7 @@
                         </table>
                     </div>
                 </div>
-                <div class="tab-pane" id="messages" role="tabpanel" aria-labelledby="messages-tab">
+                <div class="tab-pane {{ ($status === "toReturn") ? 'active' :'' }}" id="messages" role="tabpanel" aria-labelledby="messages-tab">
                     <div class="table-responsive mt-3 bg-light shadow p-3">
                         <table class="table fs-5" id="dataTable4">
 
@@ -218,8 +233,10 @@
                                         <td>{{ $item->release_date }}</td>
                                         <td> <span class="badge bg-danger"> {{ $item->status }} </span> </td>
                                         <td>
-                                            <form action="{{ route('admin.books.return') }}" method="post">
+                                            <form action="{{ route('admin.books.return') }}" method="post" class="return">
                                                 @csrf
+                                                <input type="text" name="status" class="hidden" readonly hidden
+                                                    value="toReturn">                                                
                                                 <input type="number" name="tIdR" class="hidden" readonly hidden
                                                     value="{{ $item->id }}">
                                                 <input type="submit" value="Return" class="btn btn-success ">
@@ -297,7 +314,7 @@
                                     <th scope="col">Status</th>
                                     <th scope="col">Reference</th>
                                     <th scope="col">Released Date</th>
-                                    <th scope="col">Returned Data</th>
+                                    <th scope="col">Returned Date</th>
 
                                 </tr>
                             </thead>
@@ -368,10 +385,60 @@
                 
             });
             
-            
-                
-            
-            
+        });
+
+        //DELETE BOOK
+        $('.delete').submit(function (e) { 
+            e.preventDefault();
+            Swal.fire({
+                title: 'Are you sure you want to delete this book ?',
+                text: " All data associated to this book will also be deleted ! ",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.submit();
+                }
+            })
+        });
+
+        //RELEASE BOOK
+        $('.release').submit(function (e) { 
+            e.preventDefault();
+            Swal.fire({
+                title: 'Are you sure you want to release this book ?',
+                text: " It will mark this book transaction as released ",
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, release it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.submit();
+                }
+            })
+        });
+
+        //RETURN BOOK
+        $('.return').submit(function (e) { 
+            e.preventDefault();
+            Swal.fire({
+                title: 'Are you sure you want to return this book ?',
+                text: " It will mark this book transaction as returned ",
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, return it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.submit();
+                }
+            })
         });
 
         $('.close-transaction').click(function (e) { 

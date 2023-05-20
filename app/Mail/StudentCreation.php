@@ -15,12 +15,13 @@ class StudentCreation extends Mailable
 
     public $user;
     public $password;
+
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($user, $password)
+    public function __construct($user,$password)
     {
         $this->user = $user;
         $this->password = $password;
@@ -46,7 +47,7 @@ class StudentCreation extends Mailable
     public function content()
     {
         return new Content(
-            view: 'email.student-creation',
+            markdown: 'email.student-creation',
         );
     }
 

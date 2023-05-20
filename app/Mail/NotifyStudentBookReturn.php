@@ -14,7 +14,6 @@ class NotifyStudentBookReturn extends Mailable
     use Queueable, SerializesModels;
 
     public $transaction;
-
     /**
      * Create a new message instance.
      *
@@ -45,7 +44,7 @@ class NotifyStudentBookReturn extends Mailable
     public function content()
     {
         return new Content(
-            view: 'email.notify-student-book-return',
+            markdown: 'email.notify-student-book-return',
         );
     }
 

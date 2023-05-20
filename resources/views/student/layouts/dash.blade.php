@@ -6,10 +6,14 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admi2.0</title>
-
-
+    <title>FbcLibrary</title>
     
+
+    {{-- icon --}}
+    <link rel="icon" href="{{ Storage::url('default/LiBRARYLOGOv2.png') }}">
+
+    {{-- SWEET ALERT --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.min.css">
 
     <!--Line Awesome Icons-->
     <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
@@ -27,7 +31,7 @@
 </head>
 
 
-<body>
+<body class="{{ $theme == 'dark' ? 'dark-theme-variables' : ''}}">
 
             
 
@@ -53,10 +57,10 @@
                 </li>
                 
                 <li>
-                    <a href="{{route('user.profile.edit', ['user'=>Auth()->user()->id])}}" class="{{ request()->is('user/profile*') ? 'active' : '' }}"><span class="las la-robot"></span><span>Profile</span></a>
+                    <a href="{{route('user.profile.edit', ['user'=>Auth()->user()->id])}}" class="{{ request()->is('user/profile*') ? 'active' : '' }}"><span class="las la-user-circle"></span><span>Profile</span></a>
                 </li>
                 <li>
-                    <a href="{{ route('user.books') }}" class="{{ request()->is('user/books*') ? 'active' : '' }}"><span class="las la-robot"></span><span>Books</span></a>
+                    <a href="{{ route('user.books') }}" class="{{ request()->is('user/books*') ? 'active' : '' }}"><span class="las la-book"></span><span>Books</span></a>
                 </li>
                 <!--<li>
                     <a href="add-admin.php"><span class="las la-plus"></span><span>Admin</span></a>
@@ -82,8 +86,8 @@
             
 
             <div class="dark-mode">
-                <span class="las la-sun active"></span>
-                <span class="las la-moon"></span>
+                <span class="las la-sun {{ $theme == 'light' ? 'active' : ''}}"></span>
+                <span class="las la-moon {{ $theme == 'dark' ? 'active' : ''}}"></span>
             </div>
 
             <div class="user-wrapper">
@@ -94,7 +98,7 @@
                     @if (Auth()->user()->student->img_path)
 
                     <img src="{{ Storage::url(Auth()->user()->student->img_path) }}" 
-                    alt="" class="img-fluid" height="64px" width="64px">
+                    alt="" class="img-fluid" height="44px" width="44px">
 
                     @endif
                     
@@ -111,6 +115,9 @@
         </main>
     </div>
 
+    {{-- SWEET ALERT --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
+
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
@@ -119,20 +126,33 @@
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script> --}}
 
 
-    <script type="text/javascript">
+    {{-- <script type="text/javascript">
       document.getElementById("image").onchange = function(){
           document.getElementById("form").submit();
       };
-    </script>
+    </script> --}}
 
     <script>
         const themeToggler = document.querySelector(".dark-mode");
         themeToggler.addEventListener('click', () => {
-            document.body.classList.toggle('dark-theme-variables');
+            // document.body.classList.toggle('dark-theme-variables');
+            if (document.body.classList.contains('dark-theme-variables')) {
+                document.body.classList.remove('dark-theme-variables')
+                setCookie('theme', 'light');
+            } else {
+                document.body.classList.add('dark-theme-variables')
+                setCookie('theme', 'dark');
+            }
 
             themeToggler.querySelector('span:nth-child(1)').classList.toggle('active');
             themeToggler.querySelector('span:nth-child(2)').classList.toggle('active');
         })
+        function setCookie(name, value) {
+            var d = new Date();
+            d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000));
+            var expires = "expires=" + d.toUTCString();
+            document.cookie = name + "=" + value + ";" + expires + ";path=/";
+        }
     </script>
 
     <script>

@@ -8,6 +8,31 @@
     --secondary: #222;
 }
 
+/* TAB-PANE  */
+.nav-link.active.text-warning{
+    background: #FFC107!important;
+    color: white!important;
+}
+
+.nav-link.active.text-primary{
+    background: #0D6EFD!important;
+    color: white!important;
+}
+
+.nav-link.active.text-info{
+    background: #0DCAF0!important;
+    color: white!important;
+}
+
+.nav-link.active.text-danger{
+    background: #DC3545!important;
+    color: white!important;
+}
+
+.nav-link.active.text-success{
+    background: #198754!important;
+    color: white!important;
+}
 
 /*DarkMode*/
 
@@ -88,7 +113,7 @@ body .container-fluid .card{
 .sidebar-brand h2 img {
     width: 35px;
     height: 35px;
-    background: linear-gradient( #428bca, #FF6219);
+    /* background: linear-gradient( #428bca, #FF6219); */
     padding-top: 1.4px;
     border-radius: 50%;
 }
@@ -447,20 +472,25 @@ tbody td:last-child {
 .dataTables_info{
     font-size: 1rem!important;
 }
-/* .dataTables_length label{
-    font-size: 16px;
+ .dataTables_length label{
+    color: black!important;
 }
+
 .dataTables_length > label > select{
-    font-size: 16px;
+    color: black!important;
 }
 div.dataTables_filter > label{
-    font-size: 16px;
+    color: black!important;
 }
 div.dataTables_filter > label > input {  
-    font-size: 16px;
+    color: black!important;
 }
-.dataTables_paginate.paging_simple_numbers > .pagination .paginate_button.page-item .page-link{
-    font-size: 13px;
+div.dataTables_wrapper div.dataTables_info {
+    color: black!important;
+}
+
+/* .dataTables_paginate.paging_simple_numbers > .pagination .paginate_button.page-item .page-link{
+    color: black!important;
 } */
 
 

@@ -31,7 +31,17 @@
         <div class="col-lg-4 mb-5">
             <div class="card">
                 <div class="card-header bg-warning text-white">
-                    <h3>Books to pick up</h3>
+                    
+                    <h3>
+                        @if ($isNewBooksToRelease)
+                            <sup>
+                                <span class="badge bg-dark text-warning">New!</span>
+                            </sup>
+                        @endif
+                        Books to pick up
+                        
+                    </h3>
+                    
                 </div>
                 <div class="card-body ">
                     <p class="text-center fs-2">

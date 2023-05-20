@@ -23,6 +23,13 @@ class BooksController extends Controller
      */
     public function index()
     {
+        $status = request('status') ?? 'available';
+        // dd(Carbon::now('asia/singapore'));
+
+        $isNewBooksToRelease = Transaction::where('status', 'to release')->whereDate('created_at', now('asia/singapore'))->count();
+
+        // dd($isNewBooksToRelease);
+
         $booksToRelease = Transaction::where('status', '=', 'to release')->with('book','user')->get();
         $booksReleased = Transaction::where('status', '=', 'released')->with('book','user')->get();
         $booksToReturn = Transaction::where('status', '=', 'to return')->with('book','user')->get();
@@ -42,6 +49,15 @@ class BooksController extends Controller
         ])
     ->get();
 
+    return view('admin.books.index', [
+        'books'=>$books,
+        'booksToRelease'=>$booksToRelease,
+        'booksReleased' => $booksReleased,
+        'booksReturned'=>$booksReturned,
+        'booksToReturn'=>$booksToReturn,
+        'status' => $status,
+        'isNewBooksToRelease' => $isNewBooksToRelease
+    ]);
         // dd($books);
         // $books->each(function($book){
         //     $book->to_release = Transaction::where('book_id', '=', $book->id)->where('status', 'to release')->count();
@@ -51,7 +67,7 @@ class BooksController extends Controller
 
         // $category = Book::all()->pluck('category')->flatten();
         // dd($category);
-        return view('admin.books.index', ['books'=>$books, 'booksToRelease'=>$booksToRelease, 'booksReleased' => $booksReleased, 'booksReturned'=>$booksReturned, 'booksToReturn'=>$booksToReturn]);
+        
     }
 
     /**
@@ -139,7 +155,9 @@ class BooksController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $book = Book::findOrFail($id);
+        $book->delete();
+        return redirect()->route('admin.books.index')->with('success', 'Book successfully deleted');
     }
 
 
@@ -153,12 +171,16 @@ class BooksController extends Controller
         $transcation->release_date = $date;
         $transcation->save();
 
-        return redirect()->route('admin.books.index')->with('success', 'Book successfully released');
+        return redirect()->route('admin.books.index', [
+            'status' => 'pickUp',
+        ])->with('success', 'Book successfully released');
     }
 
     public function return(Request $request){
         $date = Carbon::now('asia/singapore')->toDateTimeString();
         
+        $status = $request->post('status') ?? 'released';
+
         $transcationId = $request->post('tIdR');    
 
         $transcation = Transaction::with('book')->findOrFail($transcationId);
@@ -175,7 +197,9 @@ class BooksController extends Controller
         $transcation->return_date = $date;
         $transcation->save();
         
-        return redirect()->route('admin.books.index')->with('success', 'Book successfully returned');
+        return redirect()->route('admin.books.index', [
+            'status' => $status,
+        ])->with('success', 'Book successfully returned');
     }
 
     public function ajaxView(Request $request){

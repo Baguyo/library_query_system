@@ -29,7 +29,7 @@ Route::get('email', function(){
 });
 
 Route::get('/bookReturn', function(){
-    $transaction = Transaction::with('user', 'book')->find(1);
+    $transaction = Transaction::with('user', 'book')->find(3);
     return new NotifyStudentBookReturn($transaction);
 });
 
@@ -51,7 +51,7 @@ Route::put('user/profile/{user}', [App\Http\Controllers\User\ProfileController::
 Route::get('/admin_dashboard', [App\Http\Controllers\Admin\dashboardController::class, 'index'])->name('admin.dashboard')->middleware(['access:admin','auth']);
 Route::as('admin')->resource('admin/student', App\Http\Controllers\Admin\StudentController::class)->middleware(['access:admin','auth'])->except('destroy');
 
-Route::as('admin')->resource('admin/books', \App\Http\Controllers\Admin\BooksController::class)->middleware(['access:admin', 'auth'])->except('destroy');
+Route::as('admin')->resource('admin/books', \App\Http\Controllers\Admin\BooksController::class)->middleware(['access:admin', 'auth']);
 Route::post('admin/books/release', [\App\Http\Controllers\Admin\BooksController::class, 'release'])->middleware(['access:admin', 'auth'])->name('admin.books.release');
 Route::post('admin/books/return', [\App\Http\Controllers\Admin\BooksController::class, 'return'])->middleware(['access:admin', 'auth'])->name('admin.books.return');
 Route::get('admin/book/view', [\App\Http\Controllers\Admin\BooksController::class, 'ajaxView'])->middleware(['access:admin', 'auth'])->name('admin.books.ajaxView');
