@@ -8,7 +8,7 @@
     <title>FbcLibrary</title>
 
     {{-- icon --}}
-    <link rel="icon" href="{{ Storage::url('default/LiBRARYLOGOv2.png') }}">
+    <link rel="icon" href="{{ Storage::url('default/LIBRARYLOGOv2.png') }}">
 
     {{-- SWEET ALERT --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.min.css">
@@ -19,10 +19,14 @@
 
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
-    {{-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"> --}}
-    {{-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> --}}
-    {{-- <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap.min.css"> --}}
+    
+    <link href="https://cdn.datatables.net/v/bs5/dt-1.13.4/r-2.4.1/datatables.min.css" rel="stylesheet"/>
+    {{-- PLUGINS BUTTONS--}}
+    <link href="https://cdn.datatables.net/v/bs5/b-2.3.6/b-print-2.3.6/datatables.min.css" rel="stylesheet"/>
+
+
+
+    
 
 
 </head>
@@ -39,7 +43,7 @@
     <div class="sidebar">
         <div class="sidebar-brand">
             <h2>
-                <img src="{{ Storage::url('default/LiBRARYLOGOv2.png') }}" alt="" class="img-fluid"
+                <img src="{{ Storage::url('default/LIBRARYLOGOv2.png') }}" alt="" class="img-fluid"
                     height="128px" width="128px">
                 <span class="fs-5 my-auto">LIBRARY QUERY </span>
             </h2>
@@ -104,7 +108,7 @@
                     <p class="my-auto mr-5"> {{ Auth::user()->name }}</p>
 
 
-                    <img src="{{ Storage::url('default/LiBRARYLOGOv2.png') }}" alt="" class="img-fluid"
+                    <img src="{{ Storage::url('default/LIBRARYLOGOv2.png') }}" alt="" class="img-fluid"
                         height="44px" width="44px">
 
 
@@ -128,11 +132,16 @@
 
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
-    {{-- <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script> --}}
-    {{-- <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script> --}}
+    
+    <script src="https://cdn.datatables.net/v/bs5/dt-1.13.4/r-2.4.1/datatables.min.js"></script>
+    {{-- PLUGINS BUTTONS--}}
+    <script src="https://cdn.datatables.net/v/bs5/b-2.3.6/b-print-2.3.6/datatables.min.js"></script>
+    
 
-
+    
+ 
+    
+    
 
 
     {{-- <script type="text/javascript">
@@ -169,11 +178,6 @@
         }
     </script>
 
-    <script>
-        $(document).ready(function() {
-            $('#example').DataTable();
-        });
-    </script>
 
 
 </body>

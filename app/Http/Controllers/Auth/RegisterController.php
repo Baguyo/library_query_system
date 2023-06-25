@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Student;
 use App\Providers\RouteServiceProvider;
 use App\Models\User;
+use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule as ValidationRule;
 
 class RegisterController extends Controller
 {
@@ -29,7 +32,7 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = RouteServiceProvider::HOME;
+    protected $redirectTo = 'user';
 
     /**
      * Create a new controller instance.
@@ -53,6 +56,10 @@ class RegisterController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'course' => ['required', ValidationRule::in(['BSIT', 'BSCS', 'BSECE'])],
+            'student_number' => ['required', 'min:3', 'integer', 'unique:students'],
+            'year' => ['required', 'integer'],
+            'address' => ['required', 'min:5', 'max:255'],
         ]);
     }
 
@@ -64,10 +71,20 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
+        $user =  User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
+
+        $student = new Student();
+        $student->user_id = $user->id;
+        $student->student_number = $data['student_number'];
+        $student->course = $data['course'];
+        $student->year = $data['year'];
+        $student->address = $data['address'];
+        $student->save();
+
+        return $user;
     }
 }

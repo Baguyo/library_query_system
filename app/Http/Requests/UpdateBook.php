@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreBook extends FormRequest
+class UpdateBook extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,7 +27,6 @@ class StoreBook extends FormRequest
             'name' => 'bail|required|min:4',
             'author' => 'bail|required|min:4',
             'category' => 'bail|required|min:4',
-            'isbn' => 'bail|required|min:3|unique:books',
             // 'control_number' => 'bail|required|min:3|unique:books',
             'publication_date' => 'bail|required|date',
         ];

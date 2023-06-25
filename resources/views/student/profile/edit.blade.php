@@ -72,6 +72,12 @@
                     </div>
 
                     <div class="mb-3">
+                        <label for="" class="form-label ">Course</label>
+                        <input type="text" class="form-control  disabled" @disabled(true)
+                            value="{{ $user->student->course }}" aria-describedby="helpId" placeholder="">
+                    </div>
+
+                    <div class="mb-3">
                         <label for="" class="form-label ">Year </label>
                         <input type="number" class="form-control  disabled" @disabled(true)
                             value="{{ $user->student->year }}" aria-describedby="helpId" placeholder="">

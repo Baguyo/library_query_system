@@ -17,8 +17,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('book_id');
-            $table->text('reference')->unique();
-            $table->text('status')->default('to release');
+            $table->string('reference', 255)->unique();
+            $table->text('status');
             $table->dateTime('release_date')->nullable();
             $table->dateTime('return_date')->nullable();
             $table->timestamps();

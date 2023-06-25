@@ -23,7 +23,6 @@ class StudentController extends Controller
     {
         $students = Student::with('user')->get();
         
-        
         return view('admin.student.index', ['students' => $students]);
     }
 
@@ -118,6 +117,7 @@ class StudentController extends Controller
             $password = Hash::make($password['password']);
             $student->user->password = $password;
         }
+        
         // STUDENT USER INFO SAVE
         $student->user->name = $validatedData['name'];
         $student->user->email = $email['email'];

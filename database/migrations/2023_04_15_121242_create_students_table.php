@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->bigInteger('student_number');
+            $table->string('course');
             $table->integer('year');
             $table->text('address');
             $table->text('img_path')->nullable();

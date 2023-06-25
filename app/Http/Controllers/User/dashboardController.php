@@ -15,14 +15,16 @@ class dashboardController extends Controller
         $booksReleased = Transaction::where('user_id', '=', Auth::user()->id)->where('status', '=', 'released')->with('book')->count();
         $booksToReturn = Transaction::where('user_id', '=', Auth::user()->id)->where('status', '=', 'to return')->with('book')->count();
         $booksReturned = Transaction::where('user_id', '=', Auth::user()->id)->where('status', '=', 'returned')->with('book')->count();
-
-        $booksToReleaseId = Transaction::where('user_id', '=', Auth::user()->id)->where('status', '=', 'to release')->with('book')->pluck('book_id')->toArray();
-        $booksToReturnId = Transaction::where('user_id', '=', Auth::user()->id)->where('status', '=', 'to return')->with('book')->pluck('book_id')->toArray();
-        $booksReleasedId = Transaction::where('user_id', '=', Auth::user()->id)->where('status', '=', 'released')->with('book')->pluck('book_id')->toArray();
         
-        $books = Book::all()->except($booksToReleaseId)->except($booksToReturnId)->except($booksReleasedId)->count();
+
+        $majorBooks = Book::all()->where('status', '=', null)->where('category', '=', Auth::user()->student->course)->count();
+        $genedBooks = Book::all()->where('status', '=', null)->where('category', '=', 'GENED')->count();
+
+        $totalUserAvailableBooks = $majorBooks + $genedBooks;
+        
+
         return view('student.dashboard', [
-            'books' => $books,
+            'books' => $totalUserAvailableBooks,
             'booksToPickUp'=>$booksToPickUp,
             'booksReleased' => $booksReleased,
             'booksToReturn'=>$booksToReturn,

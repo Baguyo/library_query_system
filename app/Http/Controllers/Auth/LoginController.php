@@ -37,7 +37,6 @@ class LoginController extends Controller
             case 'admin':
                 return "/admin_dashboard";
             break;
-
         }
     }
 

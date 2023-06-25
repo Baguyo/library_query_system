@@ -18,22 +18,23 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+//HOME
+Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::get('email', function(){
-    $user = User::find(2);
-    $password = 'sample';
-    return new StudentCreation($user,$password);
-});
 
-Route::get('/bookReturn', function(){
-    $transaction = Transaction::with('user', 'book')->find(3);
-    return new NotifyStudentBookReturn($transaction);
-});
 
-Auth::routes(['register'=>false]);
+// Route::get('email', function(){
+//     $user = User::find(2);
+//     $password = 'sample';
+//     return new StudentCreation($user,$password);
+// });
+
+// Route::get('/bookReturn', function(){
+//     $transaction = Transaction::with('user', 'book')->find(3);
+//     return new NotifyStudentBookReturn($transaction);
+// });
+
+Auth::routes();
 
 //USER ROUTES
 Route::get('/user', [\App\Http\Controllers\User\dashboardController::class, 'index'])->name('user.dashboard')->middleware(['auth', 'access:user']);
@@ -55,6 +56,8 @@ Route::as('admin')->resource('admin/books', \App\Http\Controllers\Admin\BooksCon
 Route::post('admin/books/release', [\App\Http\Controllers\Admin\BooksController::class, 'release'])->middleware(['access:admin', 'auth'])->name('admin.books.release');
 Route::post('admin/books/return', [\App\Http\Controllers\Admin\BooksController::class, 'return'])->middleware(['access:admin', 'auth'])->name('admin.books.return');
 Route::get('admin/book/view', [\App\Http\Controllers\Admin\BooksController::class, 'ajaxView'])->middleware(['access:admin', 'auth'])->name('admin.books.ajaxView');
+Route::get('admin/book/viewInfo', [\App\Http\Controllers\Admin\BooksController::class, 'ajaxViewBookInfo'])->middleware(['access:admin', 'auth'])->name('admin.books.ajaxViewBookInfo');
+Route::post('admin/bookImport', [\App\Http\Controllers\Admin\BooksController::class, 'import'])->middleware(['access:admin', 'auth'])->name('admin.books.import');
 //ADMIN PROFILE
 Route::get('admin/profile', [App\Http\Controllers\Admin\ProfileController::class, 'edit'])->middleware('access:admin','auth')->name('admin.profile.edit');
 Route::put('admin/profile/{admin}', [App\Http\Controllers\Admin\ProfileController::class, 'update'])->middleware('access:admin','auth')->name('admin.profile.update');

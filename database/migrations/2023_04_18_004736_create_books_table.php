@@ -18,8 +18,10 @@ return new class extends Migration
             $table->string('name');
             $table->string('author');
             $table->string('category');
-            $table->integer('quantity');
+            $table->string('isbn')->unique();
+            $table->string('control_number')->unique();
             $table->date('publication_date');
+            $table->string('status')->nullable();
             $table->timestamps();
         });
     }

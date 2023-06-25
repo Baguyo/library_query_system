@@ -3,10 +3,15 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Mail\SendReferenceToStudent;
 use App\Models\Book;
 use App\Models\Transaction;
+use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class BookController extends Controller
 {
@@ -15,74 +20,212 @@ class BookController extends Controller
 
     public function index()
     {
+
         $booksToPickUp = Transaction::where('user_id', '=', Auth::user()->id)->where('status', '=', 'to release')->with('book')->get();
         $booksReleased = Transaction::where('user_id', '=', Auth::user()->id)->where('status', '=', 'released')->with('book')->get();
         $booksToReturn = Transaction::where('user_id', '=', Auth::user()->id)->where('status', '=', 'to return')->with('book')->get();
         $booksReturned = Transaction::where('user_id', '=', Auth::user()->id)->where('status', '=', 'returned')->with('book')->get();
-        
-        $booksToReleaseId = Transaction::where('user_id', '=', Auth::user()->id)->where('status', '=', 'to release')->with('book')->pluck('book_id')->toArray();
-        $booksToReturnId = Transaction::where('user_id', '=', Auth::user()->id)->where('status', '=', 'to return')->with('book')->pluck('book_id')->toArray();
-        $booksReleasedId = Transaction::where('user_id', '=', Auth::user()->id)->where('status', '=', 'released')->with('book')->pluck('book_id')->toArray();
+
+        $userBookTransactionCount = Transaction::where('user_id', '=', Auth::user()->id)
+            ->where(function ($query) {
+                $query->orWhere('status', '=', 'to release');
+                $query->orWhere('status', '=', 'released');
+                $query->orWhere('status', '=', 'to return');
+            })
+            ->count();
 
 
+        $numberOfBooksToBorrowPolicy = (int)env('NUMBER_BOOKS_TO_BORROW');
 
-        // $books = Book::all()->except($booksToReleaseId)->except($booksToReturnId)->except($booksReleasedId);
-        $books = Book::withCount(['transaction',
-        'transaction AS to_release_count' => function($query){
-            $query->where('status', '=', 'to release');
-        },
-        'transaction AS release_count' => function($query){
-            $query->where('status', '=', 'released');
-        },
-        'transaction AS to_return_count' => function($query){
-            $query->where('status', '=', 'to return');
+
+        $majorBooksCount = 0;
+        $genedBooksCount = 0;
+
+        $userBookOnTransactionIds = Transaction::where('user_id', '=', Auth::user()->id)
+            ->where(function ($query) {
+                $query->orWhere('status', '=', 'to release');
+                $query->orWhere('status', '=', 'released');
+                $query->orWhere('status', '=', 'to return');
+            })
+            ->pluck('book_id');
+
+
+        if ($userBookOnTransactionIds->count() === 1) {
+
+            $userBooks = Book::whereIn('id', $userBookOnTransactionIds)->get(['name', 'author', 'category', 'publication_date']);
+
+
+            $majorBooks = DB::table('books')
+                ->select('id', "name", 'author',  'category', 'isbn', 'control_number', 'publication_date', DB::raw("count(*) as quantity"))
+                ->where('status', '=', null)
+                ->where('category', '=', Auth::user()->student->course)
+                ->whereNot(function (QueryBuilder $query) use ($userBooks) {
+                    $query->where('name', '=', $userBooks[0]->name);
+                    $query->where('author', '=', $userBooks[0]->author);
+                    $query->where('category', '=', $userBooks[0]->category);
+                    $query->where('publication_date', '=', $userBooks[0]->publication_date);
+                })
+                ->groupBy('category', 'name', 'author', 'publication_date')
+                ->get();
+
+            $majorBooksCount = $majorBooks->count();
+
+            $genedBooks = DB::table('books')
+                ->select('id', "name", 'author',  'category', 'isbn', 'control_number', 'publication_date', DB::raw("count(*) as quantity"))
+                ->where('status', '=', null)
+                ->where('category', '=', 'GENED')
+                ->whereNot(function (QueryBuilder $query) use ($userBooks) {
+                    $query->where('name', '=', $userBooks[0]->name);
+                    $query->where('author', '=', $userBooks[0]->author);
+                    $query->where('category', '=', $userBooks[0]->category);
+                    $query->where('publication_date', '=', $userBooks[0]->publication_date);
+                })
+                ->groupBy('category', 'name', 'author', 'publication_date')
+                ->get();
+
+            $genedBooksCount = $genedBooks->count();
+
+            //REACH AVAILABLE BOOKS TO BORROW
+        } elseif ($userBookOnTransactionIds->count() === $numberOfBooksToBorrowPolicy) {
+
+            $userBooks = Book::whereIn('id', $userBookOnTransactionIds)->get(['name', 'author', 'category', 'publication_date']);
+
+            $majorBooks = DB::table('books')
+                ->select('id', "name", 'author', 'category', 'isbn', 'control_number', 'publication_date', DB::raw("count(*) as quantity"))
+                ->where('status', '=', null)
+                ->where('category', '=', Auth::user()->student->course)
+                ->whereNot(function (QueryBuilder $query) use ($userBooks) {
+                    $query->where('name', '=', $userBooks[0]->name);
+                    $query->where('author', '=', $userBooks[0]->author);
+                    $query->where('category', '=', $userBooks[0]->category);
+                    $query->where('publication_date', '=', $userBooks[0]->publication_date);
+                })
+                ->whereNot(function (QueryBuilder $query) use ($userBooks) {
+                    $query->where('name', '=', $userBooks[1]->name);
+                    $query->where('author', '=', $userBooks[1]->author);
+                    $query->where('category', '=', $userBooks[1]->category);
+                    $query->where('publication_date', '=', $userBooks[1]->publication_date);
+                })
+                ->groupBy('category', 'name', 'author', 'publication_date')
+                ->get();
+
+            $majorBooksCount = $majorBooks->count();
+
+            $genedBooks = DB::table('books')
+                ->select('id', "name", 'author', 'category', 'isbn', 'control_number', 'publication_date', DB::raw("count(*) as quantity"))
+                ->where('status', '=', null)
+                ->where('category', '=', 'GENED')
+                ->whereNot(function (QueryBuilder $query) use ($userBooks) {
+                    $query->where('name', '=', $userBooks[0]->name);
+                    $query->where('author', '=', $userBooks[0]->author);
+                    $query->where('category', '=', $userBooks[0]->category);
+                    $query->where('publication_date', '=', $userBooks[0]->publication_date);
+                })
+                ->whereNot(function (QueryBuilder $query) use ($userBooks) {
+                    $query->where('name', '=', $userBooks[1]->name);
+                    $query->where('author', '=', $userBooks[1]->author);
+                    $query->where('category', '=', $userBooks[1]->category);
+                    $query->where('publication_date', '=', $userBooks[1]->publication_date);
+                })
+                ->groupBy('category', 'name', 'author', 'publication_date')
+                ->get();
+
+            $genedBooksCount = $genedBooks->count();
+        } else {
+            $userBooks = Book::whereIn('id', $userBookOnTransactionIds)->get(['name', 'author', 'category', 'publication_date']);
+
+            $majorBooks = DB::table('books')
+                ->select('id', "name", 'author',  'category', 'isbn', 'control_number', 'publication_date', DB::raw("count(*) as quantity"))
+                ->where('status', '=', null)
+                ->where('category', '=', Auth::user()->student->course)
+                ->groupBy('category', 'name', 'author', 'publication_date')
+                ->get();
+
+            $majorBooksCount = $majorBooks->count();
+
+            $genedBooks = DB::table('books')
+                ->select('id', "name", 'author', 'category', 'isbn', 'control_number', 'publication_date', DB::raw("count(*) as quantity"))
+                ->where('status', '=', null)
+                ->where('category', '=', 'GENED')
+                ->groupBy('category', 'name', 'author', 'publication_date')
+                ->get();
+
+            $genedBooksCount = $genedBooks->count();
         }
-    ])->whereNotIn('id', $booksToReleaseId)->whereNotIn('id', $booksReleasedId)->whereNotIn('id', $booksToReturnId)->get();
 
-        // dd($books);
+        $unavailableMajorBooks = DB::table('books')
+            ->select('id', "name", 'author',  'category', 'isbn', 'control_number', 'publication_date', DB::raw("count(*) as quantity"))
+            ->where('status', '=', 'reserved')
+            ->where('category', '=', Auth::user()->student->course)
+            ->groupBy('category', 'name', 'author', 'publication_date')
+            ->get();
+
+        $unavailableGenedBooks = DB::table('books')
+            ->select('id', "name", 'author',  'category', 'isbn', 'control_number', 'publication_date', DB::raw("count(*) as quantity"))
+            ->where('status', '=', 'reserved')
+            ->where('category', '=', 'GENED')
+            ->groupBy('category', 'name', 'author', 'publication_date')
+            ->get();
+
+        // dd($unavailableMajorBooks);
+
+        $totalBooks = $majorBooksCount + $genedBooksCount;
 
         $imgStatus = Auth::user()->student->img_path;
-        
-        // dd($imgStatus);
-        // dd($booksToReturn);
+
         return view('student.books.index', [
-            'books' => $books,
-            'booksToPickUp'=>$booksToPickUp,
+            'majorBooks' => $majorBooks,
+            'genedBooks' => $genedBooks,
+            'totalBooks' => $totalBooks,
+            'booksToPickUp' => $booksToPickUp,
             'booksReleased' => $booksReleased,
-            'booksToReturn'=>$booksToReturn,
-            'booksReturned'=>$booksReturned,
-            'imgStatus' => $imgStatus
+            'booksToReturn' => $booksToReturn,
+            'booksReturned' => $booksReturned,
+            'imgStatus' => $imgStatus,
+            'userBookTransactionCount' => $userBookTransactionCount,
+            'numberOfBooksToBorrowPolicy' => $numberOfBooksToBorrowPolicy,
+            'unavailableMajorBooks' => $unavailableMajorBooks,
+            'unavailableGenedBooks' => $unavailableGenedBooks,
         ]);
     }
 
     public function create(Request $request)
     {
-
-
         $bookId = $request->post('bId');
 
         $book = Book::findOrFail($bookId);
 
-        // $current_quantity = $book->quantity;
-        // $up_quantity = $current_quantity - 1;
+        if($book->status == 'reserved'){
+            return redirect()->route('user.books')->with('error', "The book you're trying to borrow has been already reserved by another student. We're very sorry for the inconvience.");
+        }else{
+            $book->status = "reserved";
+            $book->save();
+    
+            $transaction = new Transaction();
+            $transaction->book_id = $book->id;
+            $transaction->reference = uniqid();
+            $transaction->status = 'to release';
+            $transaction->user()->associate(Auth::user());
+            $transaction->save();
+    
+            Mail::to(Auth::user())->send(
+                new SendReferenceToStudent($transaction->reference)
+            );
+    
+            return redirect()->route('user.books')->with('success', 'Book successfully reserved for borrow');
+        }
 
-        // $book->quantity = $up_quantity;
-        // $book->save();
 
-        $transaction = new Transaction();
-        $transaction->book_id = $bookId;
-        $transaction->reference = uniqid();
-        $transaction->user()->associate(Auth::user());
-        $transaction->save();
-
-        return redirect()->route('user.books')->with('success', 'Book successfully reserved for borrow');
     }
 
-    public function destroy(Request $request){
+    public function destroy(Request $request)
+    {
         $transactionId = $request->post('tIdR');
         $transaction = Transaction::findOrFail($transactionId);
-        
+
         $book = Book::findOrFail($transaction->book_id);
+        $book->status = null;
+        $book->save();
         // $current_quantity = $book->quantity;
         // $up_quantity = $current_quantity + 1;
 
@@ -91,6 +234,5 @@ class BookController extends Controller
 
         $transaction->delete();
         return redirect()->route('user.books')->with('success', 'Book successfully cancel to borrow');
-        
     }
 }

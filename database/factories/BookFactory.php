@@ -19,8 +19,9 @@ class BookFactory extends Factory
         return [
             'name' => fake()->name(),
             'author' => fake()->name(),
-            'category' => fake()->text(10),
-            'quantity' => fake()->numerify('#'),
+            'category' => 'BSIT',
+            'isbn' => fake()->numerify('####'),
+            'control_number' => fake()->numerify('#####'),
             'publication_date' => fake()->date(),
         ];
     }

@@ -13,7 +13,9 @@
     </a>
 
     <div class="table-responsive mt-4 bg-light shadow p-4">
-        <table class="table fs-5" id="dataTable">
+        
+        <table class="table fs-5" id="dataTable" width="100%" cellspacing="0">
+            <h6 class="text-dark">List of Students</h6>
             <thead>
                 <tr>
                     <th scope="col">Name</th>
@@ -55,7 +57,9 @@
 
     
     <script type="module">
-        $('#dataTable').DataTable();
+        $('#dataTable').DataTable({
+            'responsive': true,
+        });
     </script>
     
 @endsection

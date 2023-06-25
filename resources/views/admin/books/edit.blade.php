@@ -34,22 +34,33 @@
                         <label for="" class="form-label ">Author</label>
                         <input type="text" class="form-control "  value="{{old('author',$book->author)}}"
                         name="author" aria-describedby="emailHelpId">
-
                     </div>
 
                     <div class="mb-3">
                         <label for="" class="form-label ">Category</label>
-                        <input type="text" class="form-control "  value="{{old('category',$book->category)}}"
-                        name="category" aria-describedby="emailHelpId">
+                        <select class="form-select" name="category" id="">
+                            <option value="" selected>--Select--</option>
+                            <option value="BSIT" {{ (old('category',$book->category) === 'BSIT') ? 'selected' : '' }}>BSIT</option>
+                            <option value="BSCS" {{ (old('category',$book->category) === 'BSCS') ? 'selected' : '' }}>BSCS</option>
+                            <option value="BSECE" {{(old('category',$book->category) === 'BSECE') ? 'selected' : '' }}>BSECE</option>
+                            <option value="GENED" {{(old('category',$book->category) === 'GENED') ? 'selected' : '' }}>GENED</option>
+                            
+                        </select>
 
                     </div>
 
                     <div class="mb-3">
-                        <label for="" class="form-label ">Quantity</label>
-                        <input type="number" class="form-control "  value="{{old('quantity',$book->quantity)}}"
-                        name="quantity" aria-describedby="emailHelpId">
-
+                        <label for="" class="form-label ">ISBN</label>
+                        <input type="text" class="form-control "  value="{{old('isbn',$book->isbn)}}"
+                        name="isbn" aria-describedby="emailHelpId">
                     </div>
+
+                    <div class="mb-3">
+                        <label for="" class="form-label ">Control Number / it is not changeable</label>
+                        <input type="text" class="form-control "  value="{{$book->control_number}}" @disabled(true)
+                        name="" aria-describedby="emailHelpId">                        
+                    </div>
+
 
                     <div class="mb-3">
                         <label for="" class="form-label ">Publication Date</label>

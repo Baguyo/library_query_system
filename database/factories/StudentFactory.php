@@ -20,6 +20,7 @@ class StudentFactory extends Factory
             'student_number' => fake()->numerify('###'),
             'year' => fake()->numerify('#'),
             'address' => fake()->address(),
+            'course' => 'BSIT',
         ];
     }
 }

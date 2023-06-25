@@ -7,18 +7,30 @@
         </p>
     @endif
 
-
+    @if (session('error'))
+    <p class="alert alert-danger ">
+        {{ Session::get('error') }}
+    </p>
+    @endif  
 
     <div class="card">
 
-        @if (!$imgStatus)
-            <div class="card-header">
+
+        <div class="card-header">
+
+            <div class="alert alert-success" role="alert">
+                <h3> Your avaiable number of books to borrow : {{ $userBookTransactionCount }} /
+                    {{ $numberOfBooksToBorrowPolicy }} </h3>
+            </div>
+
+            @if (!$imgStatus)
                 <div class="alert alert-danger" role="alert">
                     <h1> Your image not been set. You're unable to borrow a book. </h1>
                 </div>
+            @endif
 
-            </div>
-        @endif
+        </div>
+
 
         <div class="card-body">
             <!-- Nav tabs -->
@@ -26,7 +38,7 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active text-primary fs-5" id="home-tab" data-bs-toggle="tab"
                         data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Books
-                        to borrow <span class="badge bg-primary"> {{ $books->count() }} </span> </button>
+                        to borrow <span class="badge bg-primary"> {{ $totalBooks }} </span> </button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link text-warning fs-5" id="profile-tab" data-bs-toggle="tab"
@@ -58,64 +70,238 @@
             <!-- Tab panes -->
             <div class="tab-content">
                 <div class="tab-pane active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                    <div class="table-responsive mt-4 bg-light shadow p-3">
-                        <table class="table fs-5" id="dataTable">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Name</th>
-                                    <th scope="col">Author</th>
-                                    <th scope="col">Category</th>
-                                    <th scope="col">Quantity</th>
-                                    <th scope="col">Publication Date</th>
-                                    <th scope="col">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($books as $item)
-                                    <tr>
-                                        <td>{{ $item->name }}</td>
-                                        <td>{{ $item->author }}</td>
-                                        <td>{{ $item->category }}</td>
-                                        <td>{{ $item->quantity - ($item->to_release_count + $item->release_count + $item->to_return_count) }}
-                                        </td>
-                                        <td>{{ $item->publication_date }}</td>
-                                        <td>
-                                            @if ($item->quantity == 0)
-                                                <span class="badge bg-danger">Out of stock</span>
-                                            @else
-                                                @if ($imgStatus)
-                                                    <form action="{{ route('user.books') }}" method="post" class="borrow">
-                                                        @csrf
-                                                        <input type="number" name="bId" class="hidden" readonly hidden
-                                                            value="{{ $item->id }}">
-                                                        <input type="submit" value="Borrow" class="btn btn-primary">
-                                                    </form>
-                                                @else
-                                                    <button class="btn " disabled>
-                                                        Unable to borrow
-                                                    </button>
-                                                @endif
-                                            @endif
 
-                                        </td>
+                    <ul class="nav nav-pills mb-3 mt-3" id="pills-tab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="major-books-tab" data-bs-toggle="pill"
+                                data-bs-target="#major-books" type="button" role="tab" aria-controls="major-books"
+                                aria-selected="true">Available Major Books</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="gened-books-tab" data-bs-toggle="pill"
+                                data-bs-target="#gened-books" type="button" role="tab" aria-controls="gened-books"
+                                aria-selected="false">Available GENED Books</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="unvailable-major-books-tab" data-bs-toggle="pill"
+                                data-bs-target="#unvailable-major-books" type="button" role="tab"
+                                aria-controls="unvailable-major-books" aria-selected="false">Unavailable Major
+                                Books</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="unvailable-gened-books-tab" data-bs-toggle="pill"
+                                data-bs-target="#unvailable-gened-books" type="button" role="tab"
+                                aria-controls="unvailable-gened-books" aria-selected="false">Unavailable GENED
+                                Books</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="pills-tabContent">
+                        <div class="tab-pane fade show active" id="major-books" role="tabpanel"
+                            aria-labelledby="major-books-tab">
+                            <div class="table-responsive mt-4 bg-light shadow p-3">
+
+                                <table class="table fs-5" id="dataTableAvailableBook1" width="100%" cellspacing="0">
+                                    <h6 class="text-dark">List of available Major Books</h6>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Title</th>
+                                            <th scope="col">Author</th>
+                                            <th scope="col">Category</th>
+                                            <th scope="col">Publication Date</th>
+                                            <th scope="col">Quantity</th>
+                                            <th scope="col">Action</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($majorBooks as $item)
+                                            <tr>
+                                                <td>{{ $item->name }}</td>
+                                                <td>{{ $item->author }}</td>
+                                                <td>{{ $item->category }}</td>
+                                                <td>{{ $item->publication_date }}</td>
+                                                <td>{{ $item->quantity }}</td>
+
+                                                <td>
+
+                                                    @if ($imgStatus)
+                                                        @if ($numberOfBooksToBorrowPolicy - $userBookTransactionCount >= 1)
+                                                            <form action="{{ route('user.books') }}" method="post"
+                                                                class="borrow">
+                                                                @csrf
+                                                                <input type="number" name="bId" class="hidden"
+                                                                    readonly hidden value="{{ $item->id }}">
+                                                                <input type="submit" value="Borrow"
+                                                                    class="btn btn-primary">
+                                                            </form>
+                                                        @else
+                                                            <button class="btn " disabled>
+                                                                Unable to borrow
+                                                            </button>
+                                                        @endif
+                                                    @else
+                                                        <button class="btn " disabled>
+                                                            Unable to borrow
+                                                        </button>
+                                                    @endif
+
+
+                                                </td>
+                                            </tr>
+                                        @empty
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="gened-books" role="tabpanel" aria-labelledby="gened-books-tab">
+                            <div class="table-responsive mt-4 bg-light shadow p-3">
+
+                                <table class="table fs-5" id="dataTableAvailableBook2" width="100%" cellspacing="0">
+                                    <h6 class="text-dark">List of available Gened Books</h6>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Title</th>
+                                            <th scope="col">Author</th>
+                                            <th scope="col">Category</th>
+                                            <th scope="col">Publication Date</th>
+                                            <th scope="col">Quantity</th>
+                                            <th scope="col">Action</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($genedBooks as $item)
+                                            <tr>
+                                                <td>{{ $item->name }}</td>
+                                                <td>{{ $item->author }}</td>
+                                                <td>{{ $item->category }}</td>
+                                                <td>{{ $item->publication_date }}</td>
+                                                <td>{{ $item->quantity }}</td>
+
+                                                <td>
+
+                                                    @if ($imgStatus)
+                                                        @if ($numberOfBooksToBorrowPolicy - $userBookTransactionCount >= 1)
+                                                            <form action="{{ route('user.books') }}" method="post"
+                                                                class="borrow">
+                                                                @csrf
+                                                                <input type="number" name="bId" class="hidden"
+                                                                    readonly hidden value="{{ $item->id }}">
+                                                                <input type="submit" value="Borrow"
+                                                                    class="btn btn-primary">
+                                                            </form>
+                                                        @else
+                                                            <button class="btn " disabled>
+                                                                Unable to borrow
+                                                            </button>
+                                                        @endif
+                                                    @else
+                                                        <button class="btn " disabled>
+                                                            Unable to borrow
+                                                        </button>
+                                                    @endif
+
+
+                                                </td>
+                                            </tr>
+                                        @empty
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="unvailable-major-books" role="tabpanel"
+                            aria-labelledby="unvailable-major-books-tab">
+                            <div class="table-responsive mt-4 bg-light shadow p-3">
+
+                                <table class="table fs-5" id="dataTableAvailableBook3" width="100%" cellspacing="0">
+                                    <h6 class="text-dark">List of Unavailable Major Books</h6>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Title</th>
+                                            <th scope="col">Author</th>
+                                            <th scope="col">Category</th>
+                                            <th scope="col">Publication Date</th>
+                                            <th scope="col">Quantity</th>
+                                            <th scope="col">Status</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($unavailableMajorBooks as $item)
+                                            <tr>
+                                                <td>{{ $item->name }}</td>
+                                                <td>{{ $item->author }}</td>
+                                                <td>{{ $item->category }}</td>
+                                                <td>{{ $item->publication_date }}</td>
+                                                <td>{{ $item->quantity }}</td>
+
+                                                <td>
+                                                    <span class="badge bg-success">Borrowed by Student</span>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="unvailable-gened-books" role="tabpanel"
+                        aria-labelledby="unvailable-gened-books-tab">
+                        <div class="table-responsive mt-4 bg-light shadow p-3">
+
+                            <table class="table fs-5" id="dataTableAvailableBook4" width="100%" cellspacing="0">
+                                <h6 class="text-dark">List of Unavalable Gened books</h6>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Title</th>
+                                        <th scope="col">Author</th>
+                                        <th scope="col">Category</th>
+                                        <th scope="col">Publication Date</th>
+                                        <th scope="col">Quantity</th>
+                                        <th scope="col">Status</th>
+
                                     </tr>
-                                @empty
-                                @endforelse
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @forelse ($unavailableGenedBooks as $item)
+                                        <tr>
+                                            <td>{{ $item->name }}</td>
+                                            <td>{{ $item->author }}</td>
+                                            <td>{{ $item->category }}</td>
+                                            <td>{{ $item->publication_date }}</td>
+                                            <td>{{ $item->quantity }}</td>
+
+                                            <td>
+                                                <span class="badge bg-success">Borrowed by Student</span>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
+
+                    </div>
+
+
                 </div>
                 <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">
                     <div class="table-responsive mt-4 bg-light shadow p-3">
-                        <table class="table fs-5" id="dataTable2">
+                        <table class="table fs-5" id="datatable2-to-pick-up" width="100%" cellspacing="0">
+                            <h6 class="text-dark">List of Books to Pick up</h6>
                             <thead>
                                 <tr>
-                                    <th scope="col">Name</th>
+                                    <th scope="col">Title</th>
                                     <th scope="col">Author</th>
                                     <th scope="col">Category</th>
                                     <th scope="col">Reference</th>
                                     <th scope="col">Publication Date</th>
-                                    <th scope="col">Release Date</th>
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
@@ -126,9 +312,7 @@
                                         <td>{{ $item->book->author }}</td>
                                         <td>{{ $item->book->category }}</td>
                                         <td>{{ $item->reference }}</td>
-
                                         <td>{{ $item->book->publication_date }}</td>
-                                        <td>{{ $item->release_date }}</td>
                                         <td>
 
                                             <form action="{{ route('user.books.destroy') }}" method="post"
@@ -149,11 +333,12 @@
                     </div>
                 </div>
                 <div class="tab-pane" id="released" role="tabpanel" aria-labelledby="released-tab">
-                    <div class="table-responsive mt-4 bg-light shadow p-3">
+                    <div class="table-responsive mt-4 bg-light shadow p-3" width="100%" cellspacing="0">
                         <table class="table fs-5" id="dataTable3">
+                            <h6 class="text-dark">List of Released Books</h6>
                             <thead>
                                 <tr>
-                                    <th scope="col">Name</th>
+                                    <th scope="col">Title</th>
                                     <th scope="col">Author</th>
                                     <th scope="col">Category</th>
                                     <th scope="col">Publication Date</th>
@@ -179,10 +364,11 @@
                 </div>
                 <div class="tab-pane" id="messages" role="tabpanel" aria-labelledby="messages-tab">
                     <div class="table-responsive mt-4 bg-light shadow p-3">
-                        <table class="table fs-5" id="dataTable4">
+                        <table class="table fs-5" id="dataTable4" width="100%" cellspacing="0">
+                            <h6 class="text-dark">List of Books to Return</h6>
                             <thead>
                                 <tr>
-                                    <th scope="col">Name</th>
+                                    <th scope="col">Title</th>
                                     <th scope="col">Author</th>
                                     <th scope="col">Category</th>
                                     <th scope="col">Publication Date</th>
@@ -211,10 +397,11 @@
                 </div>
                 <div class="tab-pane" id="settings" role="tabpanel" aria-labelledby="settings-tab">
                     <div class="table-responsive mt-4 bg-light shadow p-3">
-                        <table class="table fs-5" id="dataTable5">
+                        <table class="table fs-5" id="dataTable5" width="100%" cellspacing="0">
+                            <h6 class="text-dark">List of Returned Books</h6>
                             <thead>
                                 <tr>
-                                    <th scope="col">Name</th>
+                                    <th scope="col">Title</th>
                                     <th scope="col">Author</th>
                                     <th scope="col">Category</th>
                                     <th scope="col">Publication Date</th>
@@ -294,9 +481,14 @@
         });
 
         $('#dataTable').DataTable();
-        $('#dataTable2').DataTable();
+        $('#datatable2-to-pick-up').DataTable();
         $('#dataTable3').DataTable();
         $('#dataTable4').DataTable();
         $('#dataTable5').DataTable();
+        $('#dataTableAvailableBook1').DataTable();
+        $('#dataTableAvailableBook2').DataTable();
+        $('#dataTableAvailableBook3').DataTable();
+        $('#dataTableAvailableBook4').DataTable();
+
     </script>
 @endsection
