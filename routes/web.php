@@ -68,8 +68,9 @@ Route::put('admin/profile/{admin}', [App\Http\Controllers\Admin\ProfileControlle
 // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 //ADMIN ADD ADMIN
-Route::get('admin/add', [App\Http\Controllers\Admin\ProfileController::class, 'create'])->middleware('access:admin','auth')->name('admin.add.create');
-Route::post('admin/add', [App\Http\Controllers\Admin\ProfileController::class, 'store'])->middleware('access:admin','auth')->name('admin.add.store');
+Route::get('admin/list', [App\Http\Controllers\Admin\ProfileController::class, 'index'])->middleware('access:admin','auth')->name('admin.add.index');
+Route::get('admin/list/add', [App\Http\Controllers\Admin\ProfileController::class, 'create'])->middleware('access:admin','auth')->name('admin.add.create');
+Route::post('admin/list/add', [App\Http\Controllers\Admin\ProfileController::class, 'store'])->middleware('access:admin','auth')->name('admin.add.store');
 
 
 

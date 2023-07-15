@@ -4,13 +4,21 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateAdmin;
+use App\Mail\NotifyAdminCreate;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class ProfileController extends Controller
 {
+
+    public function index(){
+        $admin = User::where('type', '=', 1)->get();
+        return view('admin.profile.index', ['admin'=>$admin]);
+    }
+
     public function edit($id){
         $admin = User::findOrFail($id);   
         $this->authorize($admin);
@@ -23,6 +31,10 @@ class ProfileController extends Controller
 
         $admin = User::findOrFail($id);
         $this->authorize($admin);
+
+        $email = $request->validate([
+            'email' => "bail|required|min:3|email|unique:users,email," . $admin->id,
+        ]);
         
         if (!empty($validatedData['password'])) {
 
@@ -32,8 +44,11 @@ class ProfileController extends Controller
             $password = Hash::make($password['password']);
             
             $admin->password = $password;
-            $admin->save();   
         }
+
+        $admin->name = $validatedData['name'];
+        $admin->email = $email['email'];
+        $admin->save();
 
         return redirect()->route('admin.profile.edit', ['admin'=>Auth()->user()->id])->with('success', 'Admin successfully updated');
     }
@@ -59,7 +74,11 @@ class ProfileController extends Controller
 
         $new_admin->save();
 
-        return redirect()->route('admin.add.create')->with('success', 'New Admin successfully added');
+        Mail::to($new_admin->email)->send(
+            new NotifyAdminCreate($new_admin->name, $new_admin->email, $validatedData['password'])
+        );
+
+        return redirect()->route('admin.add.index')->with('success', 'New Admin successfully added');
         
 
 

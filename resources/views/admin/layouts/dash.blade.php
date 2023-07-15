@@ -74,8 +74,8 @@
                 </li>
 
                 <li>
-                    <a href="{{ route('admin.add.create') }}"
-                        class="{{ request()->is('admin/add*') ? 'active' : '' }}"><span
+                    <a href="{{ route('admin.add.index') }}"
+                        class="{{ request()->is('admin/list*') ? 'active' : '' }}"><span
                             class="las la-user-plus"></span><span>Admin List</span></a>
                 </li>
                 {{-- <li>

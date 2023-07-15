@@ -24,6 +24,7 @@ class UpdateAdmin extends FormRequest
     public function rules()
     {
         return [
+            'name' => 'bail|required|min:3',
             'password' => 'confirmed'
         ];
     }
