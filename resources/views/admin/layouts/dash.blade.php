@@ -68,9 +68,15 @@
                             class="las la-book"></span><span>Books</span></a>
                 </li>
                 <li>
-                    <a href="{{ route('admin.profile.edit') }}"
+                    <a href="{{ route('admin.profile.edit', ['admin'=>Auth()->user()->id]) }}"
                         class="{{ request()->is('admin/profile*') ? 'active' : '' }}"><span
                             class="las la-user-circle"></span><span>Profile</span></a>
+                </li>
+
+                <li>
+                    <a href="{{ route('admin.add.create') }}"
+                        class="{{ request()->is('admin/add*') ? 'active' : '' }}"><span
+                            class="las la-user-plus"></span><span>Admin List</span></a>
                 </li>
                 {{-- <li>
                     <a href="#" onclick="event.preventDefault();"><span class="las la-plus"></span><span>Admin</span></a>
@@ -176,6 +182,21 @@
             var expires = "expires=" + d.toUTCString();
             document.cookie = name + "=" + value + ";" + expires + ";path=/";
         }
+    </script>
+
+    <script>
+        // if(document.getElementById('nav-toggle').checked){
+        //     alert('open');
+        // }else{
+        //     alert('close');
+        // }
+
+        
+        // if($('.sidebar').css('width') == '250px'){
+        //     alert('pota');
+        // }
+
+        
     </script>
 
 

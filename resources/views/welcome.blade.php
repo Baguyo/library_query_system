@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
+<div class="container" style="vertical-align: middle; margin-top: 100px">
+    <div class="row justify-content-center" >
         <div class="col-md-8">
             <div class="card">
 

@@ -81,14 +81,18 @@ class BooksController extends Controller
     {
         $validatedData = $request->validated();
 
-        $bookCategoryCount = Book::where('category', '=', $validatedData['category'])->count();
+        $latestCNInBookCategory = Book::where('category', '=', $validatedData['category'])->get()->last();
+        
+        $latestCNInBookCategoryArray =  explode('-', $latestCNInBookCategory->control_number);
+
+        $control_number = 1 + (int)$latestCNInBookCategoryArray[2];;
 
         $book = new Book();
         $book->name = $validatedData['name'];
         $book->author = $validatedData['author'];
         $book->category = $validatedData['category'];
         $book->isbn = $validatedData['isbn'];
-        $book->control_number = 'CN-' . $validatedData['category'] . - ($bookCategoryCount + 1);
+        $book->control_number = 'CN-' . $validatedData['category'] . '-'.  $control_number;
         $book->publication_date = $validatedData['publication_date'];
         $book->save();
 
@@ -243,16 +247,20 @@ class BooksController extends Controller
 
                 // dd($isBookExist);
 
-                if ( count($isBookExist) === 0) {
+                if (count($isBookExist) === 0) {
                     // dd('book not exist');
-                    $bookCategoryCount = Book::where('category', '=', strtoupper($key[$i][2]))->count();
+                    $latestCNInBookCategory = Book::where('category', '=', strtoupper($key[$i][2]))->get()->last();
+
+                    $latestCNInBookCategoryArray =  explode('-', $latestCNInBookCategory->control_number);
+
+                    $control_number = 1 + (int)$latestCNInBookCategoryArray[2];
                     // dump($key[$i][1]);
                     $book = new Book();
                     $book->name = $key[$i][0];
                     $book->author = $key[$i][1];
                     $book->category = strtoupper($key[$i][2]);
                     $book->isbn = $key[$i][3];
-                    $book->control_number = 'CN-' . strtoupper($key[$i][2]) . - ($bookCategoryCount + 1);
+                    $book->control_number = 'CN-' . strtoupper($key[$i][2]) . "-" .  $control_number;
                     $book->publication_date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($key[$i][4])->format('Y/m/d');
                     $book->save();
                 }

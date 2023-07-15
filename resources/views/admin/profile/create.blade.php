@@ -12,7 +12,7 @@
         <div class="card">
             <div class="card-header">
                 <h1>
-                    Edit Account
+                    Add Admin
                 </h1>
             </div>
             <div class="card-body">
@@ -28,19 +28,18 @@
                 @endif
 
 
-                <form action="{{ route('admin.profile.update', ['admin' => $admin->id]) }}" method="post">
-                    @method('PUT')
+                <form action="{{ route('admin.add.store',) }}" method="post">
                     @csrf
                     <div class="mb-3">
                         <label for="" class="form-label ">Name</label>
-                        <input type="text" class="form-control  disabled" @disabled(true) readonly
-                            value="{{ $admin->name }}" aria-describedby="helpId" placeholder="">
+                        <input type="text" class="form-control  " name="name"
+                            value="{{old('name')}}" aria-describedby="helpId" placeholder="">
                     </div>
 
                     <div class="mb-3">
                         <label for="" class="form-label ">Email</label>
-                        <input type="email" class="form-control  disabled" @disabled(true)
-                            value="{{ $admin->email }}" aria-describedby="emailHelpId">
+                        <input type="email" class="form-control " name="email"
+                            value="{{old('email')}}" aria-describedby="emailHelpId">
 
                     </div>
 

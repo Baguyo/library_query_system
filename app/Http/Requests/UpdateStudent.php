@@ -26,6 +26,7 @@ class UpdateStudent extends FormRequest
         return [
             'name' => 'bail|required|min:4',
             'password'=> 'confirmed',
+            'course' => 'required',
             'year' => 'bail|required|integer',
             'address' => 'bail|required|min:5',
         ];

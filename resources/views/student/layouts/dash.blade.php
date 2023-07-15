@@ -63,6 +63,9 @@
                 <li>
                     <a href="{{ route('user.books') }}" class="{{ request()->is('user/books*') ? 'active' : '' }}"><span class="las la-book"></span><span>Books</span></a>
                 </li>
+                <li>
+                    <a href="{{ route('user.account.edit', ['user'=>Auth()->user()->id]) }}" class="{{ request()->is('user/account*') ? 'active' : '' }}"><span class="las la-user-edit"></span><span>Account</span></a>
+                </li>
                 <!--<li>
                     <a href="add-admin.php"><span class="las la-plus"></span><span>Admin</span></a>
                 </li>-->

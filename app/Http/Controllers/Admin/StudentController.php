@@ -56,6 +56,7 @@ class StudentController extends Controller
 
         $student = new Student();
         $student->user_id = $user->id;
+        $student->course = $validatedData['course'];
         $student->student_number = $validatedData['student_number'];
         $student->year = $validatedData['year'];
         $student->address = $validatedData['address'];
@@ -129,6 +130,7 @@ class StudentController extends Controller
         ]);
 
         $student->student_number = $student_number['student_number'];
+        $student->course = $validatedData['course'];
         $student->year = $validatedData['year'];
         $student->address = $validatedData['address'];
         $student->save();

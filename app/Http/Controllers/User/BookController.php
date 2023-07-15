@@ -221,18 +221,21 @@ class BookController extends Controller
     public function destroy(Request $request)
     {
         $transactionId = $request->post('tIdR');
-        $transaction = Transaction::findOrFail($transactionId);
+        $transaction = Transaction::find($transactionId);
 
-        $book = Book::findOrFail($transaction->book_id);
-        $book->status = null;
-        $book->save();
-        // $current_quantity = $book->quantity;
-        // $up_quantity = $current_quantity + 1;
-
-        // $book->quantity = $up_quantity;
-        // $book->save();
-
-        $transaction->delete();
-        return redirect()->route('user.books')->with('success', 'Book successfully cancel to borrow');
+        if(!$transaction){
+            return redirect()->route('user.books')->with('error', 'Unable to Cancel Book Transaction. Book transaction is already been deleted due to 2 hours transaction validity rule');   
+        }else{
+            if($transaction->status == 'to release'){
+                $book = Book::findOrFail($transaction->book_id);
+                $book->status = null;
+                $book->save();
+        
+                $transaction->delete();
+                return redirect()->route('user.books')->with('success', 'Book successfully cancel to borrow');
+            }else{
+                return redirect()->route('user.books')->with('error', 'Unable to Cancel Book Transaction. Book already been released');
+            }
+        }
     }
 }

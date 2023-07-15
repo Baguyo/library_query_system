@@ -19,8 +19,9 @@
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>
-<body>
-    <div id="app">
+{{-- <body style="background: linear-gradient(135deg,red 1%, red 33%, blue 31%, blue 66%, yellow 66%, yellow 100% )!important" > --}}
+<body style="background-image: url(https://fbclibrary.com/storage/default/BACKGROUND.png)!important; background-size: 100% 100%!important">
+    <div id="app" >
         {{-- <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
@@ -75,9 +76,9 @@
             </div>
         </nav> --}}
 
-        <main class="py-4">
+        <div class="py-4 vh-100 "  style="vertical-align: middle; margin-top: auto">
             @yield('content')
-        </main>
+        </div>
     </div>
 </body>
 </html>

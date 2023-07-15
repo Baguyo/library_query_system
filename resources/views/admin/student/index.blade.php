@@ -21,6 +21,7 @@
                     <th scope="col">Name</th>
                     <th scope="col">Image</th>
                     <th scope="col">Email</th>
+                    <th scope="col">Course</th>
                     <th scope="col">Student Number</th>
                     <th scope="col">Year</th>
                     <th scope="col">Address</th>
@@ -41,8 +42,21 @@
                             @endif
                         </td>
                         <td>{{$item->user->email}}</td>
+                        <td>{{$item->course}}</td>
                         <td>{{$item->student_number}}</td>
-                        <td>{{ $item->year }}</td>
+                        <td>
+                            {{ $item->year }}
+                            @if ($item->year == 1)
+                                {{'st'}}
+                            @elseif($item->year == 2)
+                                {{'nd'}}
+                            @elseif($item->year == 3)
+                                {{'rd'}}
+                            @else
+                                {{'th'}}
+                            @endif
+                            year
+                        </td>
                         <td>{{$item->address}}</td>
                         <td> <a href="{{ route('admin.student.edit', ['student'=>$item->id]) }}" class="btn btn-primary">Edit</a> </td>
                     </tr>
@@ -61,5 +75,9 @@
             'responsive': true,
         });
     </script>
+
+
+
+
     
 @endsection

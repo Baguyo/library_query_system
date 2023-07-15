@@ -41,29 +41,7 @@
                       <input type="file" class="form-control" name="avatar" id="" placeholder="" aria-describedby="fileHelpId">
                     </div>
 
-                    <div class="mb-3">
-                        <label for="" class="form-label ">Name</label>
-                        <input type="text" class="form-control " value="{{ old('name', $user->name) }}" name="name"
-                            aria-describedby="helpId" placeholder="">
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="" class="form-label ">Email</label>
-                        <input type="email" class="form-control " value="{{ old('email', $user->email) }}"
-                            name="email" aria-describedby="emailHelpId">
-
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="" class="form-label ">Password</label>
-                        <input type="password" class="form-control " name="password" id="" placeholder="">
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="" class="form-label ">Retype Password</label>
-                        <input type="password" class="form-control " name="password_confirmation" id=""
-                            placeholder="">
-                    </div>
+                    
 
                     <div class="mb-3">
                         <label for="" class="form-label ">Student Number</label>

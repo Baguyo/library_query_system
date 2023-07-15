@@ -1,5 +1,5 @@
 <x-mail::message>
-    Hello! {{ $transaction->user->name }} The Book {{ $transaction->book->title }} you borrowed Stevie Lubowitz must be returned before
+    Hello! {{ $transaction->user->name }} The Book {{ $transaction->book->name }} you borrowed must be returned before
      the closing time of the library. Otherwise you will be in penalty.  
 
 {{-- <x-mail::button :url="''">

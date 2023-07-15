@@ -219,8 +219,7 @@
                                         <td>{{ $item->release_date }}</td>
                                         <td> <span class="badge bg-info text-dark"> {{ $item->status }} </span> </td>
                                         <td>
-                                            <form action="{{ route('admin.books.return') }}" method="post"
-                                                class="return">
+                                            <form action="{{ route('admin.books.return') }}" method="post" class="return1">
                                                 @csrf
                                                 <input type="number" name="tIdR" class="d-none" readonly hidden
                                                     value="{{ $item->id }}">
@@ -268,8 +267,7 @@
                                         <td>{{ $item->release_date }}</td>
                                         <td> <span class="badge bg-danger"> {{ $item->status }} </span> </td>
                                         <td>
-                                            <form action="{{ route('admin.books.return') }}" method="post"
-                                                class="return">
+                                            <form action="{{ route('admin.books.return') }}" method="post" class="return2">
                                                 @csrf
                                                 <input type="text" name="status" class="hidden" readonly hidden
                                                     value="toReturn">
@@ -349,7 +347,7 @@
                         <div class="book-title text-dark">
 
                         </div>
-                        <table class="table fs-5" id="dataTable6">
+                        <table class="table fs-5" id="dataTable6" width="100%" cellspacing="0">
                             <thead class="head">
                                 <tr>
                                     <th scope="col">Student Name</th>
@@ -379,7 +377,7 @@
 
     {{-- VIEW BOOK --}}
     <div class="modal modal-xl fade" id="staticBackdrop2" data-bs-backdrop="static" data-bs-keyboard="false"
-        tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="height: 100%">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -392,7 +390,7 @@
                         <div class="book-title-view text-dark">
 
                         </div>
-                        <table class="table fs-5" id="dataTable7">
+                        <table class="table fs-5" id="dataTable7" width="100%" cellspacing="0">
                             <thead>
                                 <tr>
                                     <th scope="col">Title</th>
@@ -514,6 +512,7 @@
                 dataType: "json",
                 success: function (response) {
                     
+                    console.log(response)
                     
                     response.forEach(element => {
                         
@@ -548,7 +547,8 @@
             //         
                     
                     $('#dataTable7').DataTable({
-                        'responsive':true
+                        'responsive':true,
+                        "scrollY": "200px",
                     });   
                     
                     
@@ -558,12 +558,6 @@
 
         });
 
-        //SHOW TRANSACTION
-        var viewTransacBtn = document.querySelectorAll('.viewTransac');
-        console.log(viewTransacBtn);
-        
-
-        
         
 
         //RELEASE BOOK
@@ -586,7 +580,24 @@
 
         
         //RETURN BOOK
-        $('.return').submit(function (e) { 
+        $('.return1').submit(function (e) { 
+            e.preventDefault();
+            Swal.fire({
+                title: 'Are you sure you want to return this book ?',
+                text: " It will mark this book transaction as returned ",
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, return it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.submit();
+                }
+            })
+        });
+
+        $('.return2').submit(function (e) { 
             e.preventDefault();
             Swal.fire({
                 title: 'Are you sure you want to return this book ?',
@@ -617,7 +628,7 @@
         
 
         $('#dataTable').DataTable({
-            'responsive':true,
+            // 'responsive':true,
             dom: 'Bfrtip',
             buttons: [
                 {

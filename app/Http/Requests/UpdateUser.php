@@ -24,9 +24,9 @@ class UpdateUser extends FormRequest
     public function rules()
     {
         return [
-            'avatar' => 'image|mimes:jpg,jpeg,gif,png,svg|max:3000',
+            'avatar' => 'image|mimes:jpg,jpeg,gif,png,svg|max:2000',
             'name' => 'bail|required|min:4',
-            'password'=> 'confirmed',
+            // 'password'=> 'confirmed',
             'address' => 'bail|required|min:5',
         ];
     }

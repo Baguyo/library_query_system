@@ -24,23 +24,23 @@ class ProfileController extends Controller
         $validatedData = $request->validated();
         $user = User::with('student')->findOrFail($id);
 
-        $email = $request->validate([
-            'email' => "bail|required|min:3|email|unique:users,email," . $user->id,
-        ]);
+        // $email = $request->validate([
+        //     'email' => "bail|required|min:3|email|unique:users,email," . $user->id,
+        // ]);
 
         $this->authorize($user);
-        if (!empty($validatedData['password'])) {
+        // if (!empty($validatedData['password'])) {
 
-            $password = $request->validate([
-                'password' => "min:6",
-            ]);
-            $password = Hash::make($password['password']);
+        //     $password = $request->validate([
+        //         'password' => "min:6",
+        //     ]);
+        //     $password = Hash::make($password['password']);
             
-            $user->password = $password;
-        }
+        //     $user->password = $password;
+        // }
 
         $user->name = $validatedData['name'];
-        $user->email = $email['email'];
+        // $user->email = $email['email'];
 
         $user->save();
 
@@ -62,5 +62,17 @@ class ProfileController extends Controller
 
         return redirect()->route('user.profile.edit', ['user'=>Auth()->user()->id])->with('success', 'Profile successfully edit');
     }
+
+    public function registerGetYear(Request $request){
+        $course =  $request->get('course');
+        if($course == 'BSECE'){
+            return 5;
+        }else{
+            return 4;
+        }
+    }
+
+
+    
 
 }

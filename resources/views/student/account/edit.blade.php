@@ -1,4 +1,4 @@
-@extends('admin.layouts.dash')
+@extends('student.layouts.dash')
 
 @section('content')
 
@@ -28,24 +28,19 @@
                 @endif
 
 
-                <form action="{{ route('admin.profile.update', ['admin' => $admin->id]) }}" method="post">
+                <form action="{{ route('user.account.update', ['user' => $user->id]) }}" method="post">
                     @method('PUT')
                     @csrf
-                    <div class="mb-3">
-                        <label for="" class="form-label ">Name</label>
-                        <input type="text" class="form-control  disabled" @disabled(true) readonly
-                            value="{{ $admin->name }}" aria-describedby="helpId" placeholder="">
-                    </div>
 
                     <div class="mb-3">
                         <label for="" class="form-label ">Email</label>
-                        <input type="email" class="form-control  disabled" @disabled(true)
-                            value="{{ $admin->email }}" aria-describedby="emailHelpId">
+                        <input type="email" class="form-control" name="email"
+                            value="{{ old('email', $user->email) }}" aria-describedby="emailHelpId">
 
                     </div>
 
                     <div class="mb-3">
-                        <label for="" class="form-label ">Password</label>
+                        <label for="" class="form-label ">New Password</label>
                         <input type="password" class="form-control " name="password" id="" placeholder="">
                     </div>
 
@@ -57,7 +52,7 @@
 
 
 
-                    <input type="submit" value="Update Admin" class="btn btn-primary ">
+                    <input type="submit" value="Update Account" class="btn btn-primary ">
 
                 </form>
             </div>

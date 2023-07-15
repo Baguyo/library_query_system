@@ -103,7 +103,9 @@
                             <label for="year" class="col-md-4 col-form-label text-md-end">Year</label>
 
                             <div class="col-md-6">
-                                <input id="year" type="number" class="form-control @error('year') is-invalid @enderror" name="year" value="{{ old('year') }}"  autocomplete="year">
+                                <select class="form-select form-select @error('course') is-invalid @enderror" name="year" id="year">
+                                    
+                                </select>
 
                                 @error('year')
                                     <span class="invalid-feedback" role="alert">
@@ -144,4 +146,35 @@
         </div>
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+
+<script>
+
+    $('#course').change(function (e) { 
+
+        if ($('#course').val() == 'BSECE') {
+            $('#year').html(
+                            "<option value='1' selected> -- SELECT -- </option>" + 
+                            "<option value='1'>1st year</option>" +
+                            "<option value='2'>2nd year</option>" + 
+                            "<option value='3'>3rd year</option>" +
+                            "<option value='4'>4th year</option>" + 
+                            "<option value='5'>5th year</option>" 
+                            )
+        } else {
+            $('#year').html(
+                            "<option value='1' selected> -- SELECT -- </option>" + 
+                            "<option value='1'>1st year</option>" +
+                            "<option value='2'>2nd year</option>" + 
+                            "<option value='3'>3rd year</option>" +
+                            "<option value='4'>4th year</option>" 
+                            )
+        }
+
+        
+    });
+
+    
+</script>
 @endsection

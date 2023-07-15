@@ -43,10 +43,14 @@ Route::get('user/books', [\App\Http\Controllers\User\BookController::class, 'ind
 Route::post('user/books', [\App\Http\Controllers\User\BookController::class, 'create'])->name('user.books')->middleware('access:user','auth');
 Route::delete('user/books', [\App\Http\Controllers\User\BookController::class, 'destroy'])->name('user.books.destroy')->middleware('access:user','auth');
 
+Route::get('register/gy', [\App\Http\Controllers\User\ProfileController::class, 'registerGetYear'])->name('register.getYear');
+
 //USER PROFILE
 Route::get('user/profile/{user}', [App\Http\Controllers\User\ProfileController::class, 'edit'])->middleware('access:user','auth')->name('user.profile.edit');
 Route::put('user/profile/{user}', [App\Http\Controllers\User\ProfileController::class, 'update'])->middleware('access:user','auth')->name('user.profile.update');
 
+Route::get('user/account/{user}', [App\Http\Controllers\User\AccountController::class, 'edit'])->middleware('access:user','auth')->name('user.account.edit');
+Route::put('user/account/{user}', [App\Http\Controllers\User\AccountController::class, 'update'])->middleware('access:user','auth')->name('user.account.update');
 
 //ADMIN ROUTES
 Route::get('/admin_dashboard', [App\Http\Controllers\Admin\dashboardController::class, 'index'])->name('admin.dashboard')->middleware(['access:admin','auth']);
@@ -59,8 +63,15 @@ Route::get('admin/book/view', [\App\Http\Controllers\Admin\BooksController::clas
 Route::get('admin/book/viewInfo', [\App\Http\Controllers\Admin\BooksController::class, 'ajaxViewBookInfo'])->middleware(['access:admin', 'auth'])->name('admin.books.ajaxViewBookInfo');
 Route::post('admin/bookImport', [\App\Http\Controllers\Admin\BooksController::class, 'import'])->middleware(['access:admin', 'auth'])->name('admin.books.import');
 //ADMIN PROFILE
-Route::get('admin/profile', [App\Http\Controllers\Admin\ProfileController::class, 'edit'])->middleware('access:admin','auth')->name('admin.profile.edit');
+Route::get('admin/profile/{admin}', [App\Http\Controllers\Admin\ProfileController::class, 'edit'])->middleware('access:admin','auth')->name('admin.profile.edit');
 Route::put('admin/profile/{admin}', [App\Http\Controllers\Admin\ProfileController::class, 'update'])->middleware('access:admin','auth')->name('admin.profile.update');
 // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+//ADMIN ADD ADMIN
+Route::get('admin/add', [App\Http\Controllers\Admin\ProfileController::class, 'create'])->middleware('access:admin','auth')->name('admin.add.create');
+Route::post('admin/add', [App\Http\Controllers\Admin\ProfileController::class, 'store'])->middleware('access:admin','auth')->name('admin.add.store');
+
+
+
 
 

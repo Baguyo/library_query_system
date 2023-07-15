@@ -28,6 +28,7 @@ class StoreStudent extends FormRequest
             'email' => 'bail|required|min:3|email|unique:users',
             'password'=> 'bail|required|confirmed|min:6',
             'student_number' => 'bail|required|min:3|integer|unique:students',
+            'course' => 'required',
             'year' => 'bail|required|integer',
             'address' => 'bail|required|min:5',
         ];
